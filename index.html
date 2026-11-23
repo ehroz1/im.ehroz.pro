@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Эхроз Шарифзода — графический дизайнер</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff; --card:#f5f5f7; --ink:#1d1d1f; --mute:#86868b; --line:#e5e5ea;
+  --white:#fff; --accent:#0a84ff; --red:#ff3b30; --lime:#d9f99d; --green:#34c759;
+  --r:24px; --cell:330px; --gap:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;border:0;background:none;cursor:pointer;color:inherit}
+
+/* ---------- header ---------- */
+header{position:sticky;top:16px;z-index:50;display:flex;justify-content:center;padding:16px}
+.nav{display:flex;gap:4px;padding:6px;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-radius:999px;box-shadow:0 4px 24px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04)}
+.nav a{padding:10px 28px;border-radius:999px;font-size:15px;color:var(--mute);transition:.2s;display:flex;align-items:center;gap:8px}
+.nav a:hover{color:var(--ink)}
+.nav a.on{background:var(--card);color:var(--ink);font-weight:500}
+.nav .dot{width:6px;height:6px;border-radius:50%;background:var(--red)}
+.lang{position:absolute;right:24px;top:22px;display:flex;gap:2px;padding:4px;border-radius:999px;background:#fff;box-shadow:0 0 0 1px var(--line)}
+.lang button{font-size:12px;padding:6px 9px;border-radius:999px;color:var(--mute)}
+.lang button.on{background:var(--card);color:var(--ink);font-weight:600}
+
+.hint{max-width:calc(var(--cell)*4 + var(--gap)*3);margin:24px auto 8px;text-align:right;font-size:12px;color:var(--mute)}
+
+/* ---------- grid ---------- */
+main{display:grid;grid-template-columns:repeat(4,var(--cell));grid-auto-rows:var(--cell);gap:var(--gap);justify-content:center;padding:0 16px}
+.t{background:var(--card);border-radius:var(--r);position:relative;overflow:hidden;padding:24px;transition:transform .25s}
+.w2{grid-column:span 2}.h2{grid-row:span 2}
+.go{position:absolute;left:16px;bottom:16px;width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:.2s}
+.t:hover .go{transform:scale(1.08)}
+.label{font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--mute);text-transform:uppercase}
+
+/* beliefs */
+.intro h1{font-size:26px;font-weight:500;padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.intro p{font-size:15px;line-height:1.5;margin-bottom:12px}
+
+/* profile */
+.prof{display:flex;flex-direction:column}
+.prof .top{display:flex;align-items:center;gap:10px}
+.ava{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#f6d365,#fda085);display:grid;place-items:center;color:#fff;font-weight:600;flex:none;overflow:hidden}
+.ava img,.photo img{width:100%;height:100%;object-fit:cover}
+.photo img{object-position:50% 18%;transition:transform .5s}.photo:hover img{transform:scale(1.04)}
+.ava img{object-position:50% 12%;transform:scale(2.2);transform-origin:50% 22%}
+.prof b{font-size:14px;display:block}.prof small{font-size:12px;color:var(--mute)}
+.tg{margin-left:auto;width:44px;height:44px;border-radius:12px;background:#2aabee;display:grid;place-items:center}
+.prof p{font-size:18px;line-height:1.35;margin-top:18px}
+.prof p a{color:var(--accent)}
+.btn{margin-top:auto;display:flex;justify-content:center;gap:6px;padding:12px;border-radius:999px;background:#fff;font-size:13px;font-weight:500;box-shadow:0 0 0 1px var(--line)}
+.btn:hover{background:#fafafa}
+
+/* tools */
+.tool-tip{background:#fff;border-radius:14px;padding:12px 14px;width:260px;margin-top:20px;box-shadow:0 4px 16px rgba(0,0,0,.06);min-height:70px}
+.tool-tip b{font-size:13px}.tool-tip p{font-size:12px;color:var(--mute);line-height:1.4;margin-top:3px}
+.dock{position:absolute;left:20px;right:20px;bottom:20px;background:#fff;border-radius:20px;padding:10px;display:flex;justify-content:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.dock button{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;transition:transform .2s;box-shadow:0 0 0 1px var(--line)}
+.dock button:hover{transform:translateY(-6px) scale(1.1)}
+.dock button.on{box-shadow:0 0 0 2px var(--accent)}
+
+/* photo */
+.photo{padding:0;background:linear-gradient(160deg,#e9d8c8,#b89a83)}
+.photo .ph{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.8);font-size:13px}
+.chip{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);padding:6px 10px;border-radius:999px;font-size:11px;font-weight:500}
+
+/* resume */
+.cv{display:grid;place-items:center}
+.paper{width:72%;aspect-ratio:1/1.41;background:#fff;border-radius:4px;box-shadow:0 8px 30px rgba(0,0,0,.12);padding:16px;transform:rotate(-2deg);transition:.3s}
+.cv:hover .paper{transform:rotate(0) scale(1.03)}
+.paper i{display:block;height:5px;background:var(--line);border-radius:3px;margin:6px 0}
+.cv .cap{position:absolute;right:20px;bottom:24px;font-size:13px;font-weight:500}
+
+/* cases */
+.cases{padding:20px}
+.filters{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--mute);margin-bottom:16px}
+.filters button{display:flex;align-items:center;gap:6px;color:var(--mute)}
+.filters button.on{color:var(--ink);font-weight:500}
+.filters .k{margin-left:auto;font-size:11px;padding:3px 7px;background:#fff;border-radius:6px;box-shadow:0 0 0 1px var(--line)}
+.fd{width:7px;height:7px;border-radius:50%}
+.list{background:#fff;border-radius:16px;height:calc(100% - 40px);display:flex;flex-direction:column;overflow:hidden}
+.list .bar{display:flex;justify-content:space-between;font-size:11px;color:var(--mute);padding:12px 16px;border-bottom:1px solid var(--line)}
+.list ul{list-style:none;overflow:auto;padding:8px;flex:1}
+.list li a{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;border:1.5px solid transparent}
+.list li.sel a{border-color:var(--accent);background:#f7fbff}
+.list li a:hover{background:#fafafa}
+.ic{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:600;flex:none}
+.list b{font-size:14px;font-weight:600;display:block}.list small{font-size:12px;color:var(--mute)}
+.list .ar{margin-left:auto;color:var(--mute)}
+
+/* phone mockups */
+.phone-t{display:grid;place-items:center}
+.phone{width:200px;height:410px;border-radius:38px;background:#111;padding:8px;box-shadow:0 20px 50px rgba(0,0,0,.25);transform:rotate(8deg);transition:.4s}
+.phone-t:hover .phone{transform:rotate(0)}
+.scr{width:100%;height:100%;border-radius:30px;background:linear-gradient(180deg,#ece9ff,#fff 45%);padding:30px 14px;overflow:hidden;font-size:10px}
+.scr .brand{font-weight:700;font-size:15px;color:#3b2fb8}
+.scr .bal{margin-top:16px;background:#2d2a8a;color:#fff;border-radius:16px;padding:14px}
+.scr .bal b{font-size:22px;display:block;margin-top:6px}
+.scr .row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.scr .row div{background:#fff;border-radius:12px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,.06);height:60px}
+.scr .ln{height:8px;border-radius:4px;background:#e8e6f5;margin:10px 0}
+
+/* experience */
+.exp h3{font-size:20px;font-weight:600;margin:4px 0 14px}
+.tl{display:flex;justify-content:space-between;background:#fff;border-radius:12px;padding:10px 8px}
+.tl button{text-align:center;font-size:13px;color:#c7c7cc;padding:4px 8px;border-radius:8px;position:relative}
+.tl button small{display:block;font-size:9px}
+.tl button.on{color:var(--ink);background:var(--card);font-weight:600}
+.tl button.on::after{content:"";position:absolute;top:2px;right:2px;width:5px;height:5px;border-radius:50%;background:var(--red)}
+.where{background:#fff;border-radius:12px;padding:10px 12px;margin-top:8px}
+.where b{font-size:14px;display:block;margin-top:4px}.where small{font-size:12px;color:var(--mute)}
+
+/* timer */
+.timer-t{display:grid;place-items:center}
+.watch{width:190px;height:220px;border-radius:40px;background:#000;color:#fff;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.25);position:relative}
+.watch .hd{display:flex;justify-content:space-between;font-size:11px}
+.watch .hd span{color:var(--green)}
+.ring{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);width:140px;height:140px}
+.ring svg{transform:rotate(-90deg)}
+.ring .v{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring b{font-size:30px;font-weight:500}.ring small{font-size:9px;color:#8e8e93}
+
+/* ai prompts */
+.ai{display:grid;place-items:center}
+.ai .win{width:86%;background:#fff;border-radius:20px;padding:14px;box-shadow:0 8px 30px rgba(0,0,0,.06)}
+.ai ul{list-style:none}
+.ai li{display:flex;align-items:center;gap:10px;padding:8px;font-size:13px;border-radius:10px}
+.ai li:hover{background:var(--card)}
+.ai li .tag{margin-left:auto;font-size:10px;color:var(--mute);padding:2px 6px;border-radius:5px;box-shadow:0 0 0 1px var(--line)}
+.ai li time{font-size:10px;color:var(--mute);width:30px;text-align:right}
+.ai .sw{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.ai .sw button{flex:1;padding:8px;border-radius:10px;font-size:13px;display:flex;justify-content:center;gap:6px}
+.ai .sw button.on{background:#111;color:#fff}
+
+/* toggle widget */
+.tw{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.pill{background:#111;color:#fff;padding:10px 18px;border-radius:12px;font-size:13px}
+.seg{display:flex;gap:4px;background:#fff;padding:4px;border-radius:999px}
+.seg button{font-size:11px;padding:5px 10px;border-radius:999px;color:var(--mute)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.switch{display:flex;align-items:center;gap:8px;font-size:11px}
+.sw-i{width:40px;height:24px;border-radius:999px;background:#d1d1d6;position:relative;transition:.2s}
+.sw-i::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sw-i.on{background:var(--green)}.sw-i.on::after{left:18px}
+.sws{display:flex;gap:8px}
+.sws i{width:40px;height:40px;border-radius:10px;background:var(--cmyk);transition:background .4s;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.sws.rgb i{background:var(--rgb)}
+.tw .ver{position:absolute;right:20px;bottom:20px;font-size:9px;color:#c7c7cc}
+
+/* logo tiles */
+.logo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+.logo .mk{font-size:26px;font-weight:700;letter-spacing:.04em}
+.logo small{font-size:12px;color:var(--mute)}
+
+/* cmd k */
+.cmd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.cmd .top{position:absolute;top:20px;font-size:11px;color:var(--mute)}
+.keys{display:flex;gap:12px}
+.keys kbd{width:56px;height:56px;border-radius:14px;background:#fff;display:grid;place-items:center;font:600 20px Inter;box-shadow:0 2px 0 #d1d1d6,0 0 0 1px var(--line);transition:.1s}
+.cmd:hover kbd,.keys kbd.dn{transform:translateY(2px);box-shadow:0 0 0 #d1d1d6,0 0 0 1px var(--line)}
+
+/* saved */
+.saved{display:grid;place-items:center}
+.cards{position:relative;width:300px;height:80px}
+.cards span{position:absolute;top:0;background:#fff;border-radius:8px;padding:8px 10px;font-size:13px;font-family:ui-monospace,monospace;box-shadow:0 4px 12px rgba(0,0,0,.08);transition:.4s}
+.cards span small{display:block;font-size:9px;color:var(--mute);font-family:Inter}
+.saved:hover .cards span{transform:translateY(-14px) rotate(0)!important}
+.glow{position:relative;margin-top:-10px;width:330px;padding:20px 22px;border-radius:20px;background:var(--lime);box-shadow:0 0 80px 20px rgba(217,249,157,.8);display:flex;gap:12px;align-items:center}
+.glow b{font-size:18px;font-weight:500;display:block}.glow small{font-size:12px;color:#4d7c0f}
+.glow .ch{margin-left:auto;font-size:20px}
+
+footer{text-align:center;font-size:11px;color:var(--mute);padding:40px 0 60px}
+footer a{color:var(--ink)}
+
+/* modal ⌘K */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.25);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding-top:15vh;z-index:100}
+.ov.on{display:flex}
+.ov .list{width:min(560px,92vw);height:auto;max-height:60vh;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.ov input{border:0;outline:0;font:15px Inter;padding:16px;border-bottom:1px solid var(--line)}
+
+/* responsive */
+body{overflow-x:clip}
+html{scroll-behavior:smooth}.t{scroll-margin-top:96px}
+.wrap{container-type:inline-size}
+.photo img{position:absolute;inset:0}
+.nav a{white-space:nowrap}
+.t{min-width:0}
+@media (max-width:1420px){
+  :root{--cell:calc((100vw - 32px - 48px)/4)}
+  @supports (width:1cqw){:root{--cell:calc((100cqw - 32px - 48px)/4)}}
+  main{grid-template-columns:repeat(4,var(--cell))}
+}
+@media (max-width:1180px){
+  .lang{position:static;margin-left:8px;align-self:center}
+  header{align-items:center}
+}
+@media (max-width:1180px){
+  :root{--cell:calc((100vw - 32px - 16px)/2)}
+  @supports (width:1cqw){:root{--cell:calc((100cqw - 32px - 16px)/2)}}
+  main{grid-template-columns:repeat(2,var(--cell))}
+}
+@media (max-width:640px){
+  header{padding:12px 8px;top:8px}
+  .nav{padding:4px}
+  .nav a{padding:8px 11px;font-size:13px}
+  .nav a.home{display:none}
+  .lang{margin-left:6px}
+  .lang button{padding:6px 7px}
+  .hint{display:none}
+  main{grid-template-columns:minmax(0,1fr);grid-auto-rows:auto;padding:8px 12px 0;gap:12px}
+  .w2,.h2{grid-column:auto;grid-row:auto}
+  .t{min-height:330px}
+  .intro,.prof,.exp{min-height:0}
+  .intro h1{font-size:22px}
+  .prof p{margin-bottom:20px}
+  .exp{padding-bottom:68px}
+  .photo{min-height:0;aspect-ratio:4/5}
+  .cv .paper{width:52%}
+  .cases{min-height:0}
+  .cases .list{height:auto}
+  .filters{flex-wrap:wrap;gap:8px 14px}
+  .filters .k{display:none}
+  .phone-t.h2{min-height:500px}
+  .saved.h2{min-height:420px}
+  .tool-tip{width:100%}
+  .dock{flex-wrap:wrap;gap:8px}
+  .dock button{width:38px;height:38px;font-size:12px}
+  .ai .win{width:100%}
+  .ai li time{display:none}
+  .glow,.cards{width:100%}
+  .cards span:nth-child(n+5){display:none}
+  .tl button{padding:4px 4px;font-size:12px}
+  footer{padding:32px 16px 48px}
+}
+@media (max-width:360px){
+  .nav a{padding:7px 8px;font-size:12px;gap:5px}
+  .lang{margin-left:4px}.lang button{padding:5px 6px;font-size:11px}
+}
+@media (hover:none){ .cmd .top{display:none} }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="#" class="on home" data-i="nav_home">Главная</a>
+    <a href="#about" data-i="nav_about">Обо мне</a>
+    <a href="#work"><span class="dot"></span><span data-i="nav_work">Работы</span></a>
+    <a href="#contact" data-i="nav_contact">Контакты</a>
+  </nav>
+  <div class="lang"><button data-l="ru" class="on">RU</button><button data-l="en">EN</button></div>
+</header>
+
+<div class="hint">➶ <span data-i="hint">Осмотрись…</span></div>
+
+<div class="wrap"><main>
+  <!-- 1. Убеждения -->
+  <section class="t intro w2" id="about">
+    <h1 data-i="believe_h">Во что я верю</h1>
+    <div id="beliefs"></div>
+  </section>
+
+  <!-- 2. Профиль -->
+  <section class="t prof" id="contact">
+    <div class="top">
+      <div class="ava" id="ava"></div>
+      <div><b id="name"></b><small id="handle"></small></div>
+      <a class="tg" id="tg1" target="_blank" aria-label="Telegram"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M9.8 15.3l-.4 5.3c.6 0 .8-.3 1.1-.6l2.7-2.5 5.5 4c1 .6 1.7.3 2-.9L24 3.6c.3-1.5-.5-2.1-1.5-1.7L1 10.2c-1.4.6-1.4 1.4-.2 1.8l5.6 1.7L19.4 5.5c.6-.4 1.2-.2.7.2z"/></svg></a>
+    </div>
+    <p id="bio"></p>
+    <a class="btn" id="tg2" target="_blank"><span data-i="msg">Написать в Telegram</span> ↗</a>
+  </section>
+
+  <!-- 3. Резюме -->
+  <a class="t cv h2" id="cvlink" target="_blank">
+    <div class="paper"><div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><div style="width:22px;height:22px;border-radius:50%;background:#e5c3a6"></div><i style="width:50%;height:7px;background:#1d1d1f"></i></div>
+      <i></i><i style="width:80%"></i><i style="width:90%"></i><br><i style="width:40%;background:#aaa"></i><i></i><i style="width:70%"></i><i></i><i style="width:85%"></i><br><i style="width:40%;background:#aaa"></i><i></i><i style="width:60%"></i><i></i><i style="width:75%"></i><i></i></div>
+    <span class="go">↗</span><span class="cap" data-i="cv">Резюме</span>
+  </a>
+
+  <!-- 4. Инструменты -->
+  <section class="t w2">
+    <div class="label" data-i="tools">Инструменты</div>
+    <div class="tool-tip"><b id="tool-n"></b><p id="tool-d"></p></div>
+    <div class="dock" id="dock"></div>
+  </section>
+
+  <!-- 5. Фото -->
+  <section class="t photo">
+    <div class="ph" id="photo"></div>
+    <span class="chip" id="loc"></span>
+    <span class="go">↗</span>
+  </section>
+
+  <!-- 6. Кейсы -->
+  <section class="t cases w2 h2" id="work">
+    <div class="filters" id="filters"></div>
+    <div class="list">
+      <div class="bar"><span data-i="enter">Enter — открыть кейс</span><span data-i="arrows">↑↓ — выбрать</span></div>
+      <ul id="cases"></ul>
+    </div>
+  </section>
+
+  <!-- 7. Телефон 1 -->
+  <section class="t phone-t h2">
+    <div class="phone"><div class="scr" style="background:linear-gradient(180deg,#dff1fb,#eef7fc 40%)">
+      <div class="brand" style="color:#1c7fb8;display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:#2aabee;display:inline-block"></span>Media Bot</div>
+      <div style="background:#fff;border-radius:14px 14px 14px 4px;padding:10px;margin-top:14px;box-shadow:0 1px 2px rgba(0,0,0,.08)">Привет! Выбери раздел 👇</div>
+      <div class="row" style="margin-top:8px"><div style="height:34px;display:grid;place-items:center;color:#1c7fb8;font-weight:600">📰 Новости</div><div style="height:34px;display:grid;place-items:center;color:#1c7fb8;font-weight:600">🎬 Видео</div><div style="height:34px;display:grid;place-items:center;color:#1c7fb8;font-weight:600">📢 Реклама</div><div style="height:34px;display:grid;place-items:center;color:#1c7fb8;font-weight:600">💬 Связь</div></div>
+      <div style="margin-top:12px;border-radius:14px;height:120px;background:linear-gradient(135deg,#111,#3b3b3b);color:#fff;padding:12px;display:flex;flex-direction:column;justify-content:flex-end"><b style="font-size:16px">WE media</b>Свежий выпуск</div>
+      <div style="background:#d9fdd3;border-radius:14px 14px 4px 14px;padding:8px 10px;margin:10px 0 0 auto;width:60%;text-align:right">Подписаться ✓</div>
+    </div></div>
+    <span class="go">↗</span>
+  </section>
+
+  <!-- 8. Опыт -->
+  <section class="t exp">
+    <div class="label" data-i="exp">Опыт</div>
+    <h3 id="exp-total"></h3>
+    <div class="tl" id="tl"></div>
+    <div class="where"><div class="label" data-i="where">Где</div><b id="w-role"></b><small id="w-place"></small></div>
+    <span class="go">↗</span>
+  </section>
+
+  <!-- 9. Таймер -->
+  <section class="t timer-t">
+    <div class="watch">
+      <div class="hd"><b data-i="today">Сегодня</b><span>● <span data-i="working">работаю</span></span></div>
+      <div class="ring">
+        <svg width="140" height="140"><circle cx="70" cy="70" r="60" stroke="#222" stroke-width="12" fill="none"/><circle id="arc" cx="70" cy="70" r="60" stroke="#fff" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="377" style="transition:stroke-dashoffset 1s"/></svg>
+        <div class="v"><b id="clock">0:00</b><small id="pct"></small></div>
+      </div>
+    </div>
+    <span class="go">↗</span>
+  </section>
+
+  <!-- 10. AI-промпты -->
+  <section class="t ai w2">
+    <div class="win">
+      <ul id="prompts"></ul>
+      <div class="sw" id="aisw"></div>
+    </div>
+    <span class="go">↗</span>
+  </section>
+
+  <!-- 11. Виджет печати: RGB / CMYK -->
+  <section class="t tw">
+    <div class="sws" id="sws"><i style="--rgb:#ff2d55;--cmyk:#e0457b"></i><i style="--rgb:#00e0ff;--cmyk:#26a9c9"></i><i style="--rgb:#7cff00;--cmyk:#8cc63f"></i><i style="--rgb:#ffe600;--cmyk:#f2e14c"></i></div>
+    <div class="seg" id="seg"><button>RGB</button><button class="on">CMYK</button><button>Pantone</button></div>
+    <div class="switch"><span class="sw-i on" id="swi"></span><span data-i="bleed">Вылеты 3 мм</span></div>
+    <span class="ver" data-i="tryit">в печать — без брака</span>
+    <span class="go">↗</span>
+  </section>
+
+  <!-- 12. Лого: WE project media -->
+  <section class="t logo">
+    <div class="mk" style="font-size:40px;letter-spacing:-.02em">WE<span style="color:var(--red)">.</span></div>
+    <b style="font-size:13px">project media</b>
+    <small data-i="logo1">старший дизайнер, 2023 — сейчас</small>
+    <span class="go">↗</span>
+  </section>
+
+  <!-- 13. Телефон 2 -->
+  <section class="t phone-t h2">
+    <div class="phone" style="transform:rotate(-8deg)"><div class="scr" style="background:#fff;padding:30px 0 0">
+      <div style="display:flex;align-items:center;gap:6px;padding:0 12px 8px"><span style="width:22px;height:22px;border-radius:50%;background:conic-gradient(#f58529,#dd2a7b,#8134af,#f58529)"></span><b style="font-size:11px">we.project.media</b><span style="margin-left:auto">⋯</span></div>
+      <div style="height:200px;background:linear-gradient(150deg,#111 0 55%,#d9f99d 55%);color:#fff;padding:16px;display:flex;flex-direction:column;justify-content:space-between">
+        <span style="font-size:9px;letter-spacing:.1em;opacity:.7">НОВЫЙ ВЫПУСК</span>
+        <b style="font-size:22px;line-height:1.05">Дизайн,<br>который<br>работает</b>
+        <span style="align-self:flex-end;background:#111;color:#d9f99d;padding:5px 9px;border-radius:999px;font-size:9px;font-weight:600">Читать →</span>
+      </div>
+      <div style="padding:10px 12px;font-size:13px">♡ 💬 ↗</div>
+      <div style="padding:0 12px;font-size:9px;color:#86868b"><b style="color:#111">1 248 отметок</b> · +35% к охвату</div>
+    </div></div>
+    <span class="go">↗</span>
+  </section>
+
+  <!-- 14. ⌘K -->
+  <button class="t cmd" id="cmdtile">
+    <span class="top" data-i="opencases">Открыть кейсы</span>
+    <div class="keys"><kbd>⌘</kbd><kbd>K</kbd></div>
+  </button>
+
+  <!-- 15. Сэкономлено -->
+  <section class="t saved w2 h2">
+    <div>
+      <div class="cards" id="stat-cards"></div>
+      <div class="glow"><span>✦</span><div><b data-i="saved">10 часов в неделю</b><small data-i="saved2">вернул команде AI — на идеи, а не на рутину</small></div><span class="ch">›</span></div>
+    </div>
+    <span class="go">↗</span>
+  </section>
+
+  <!-- 16. Лого проекта 2 -->
+  <section class="t logo">
+    <div class="mk" style="color:#c2410c;font-size:34px">Орзу</div>
+    <small data-i="logo2">реклама и полиграфия, 2022–2023</small>
+    <span class="go">↗</span>
+  </section>
+</main></div>
+
+<footer>© <span id="yr"></span> <span id="fname"></span> — <a id="tg3" target="_blank">Telegram</a> · <a id="mail"></a></footer>
+
+<div class="ov" id="ov">
+  <div class="list"><input id="q" placeholder="Поиск кейса…"><ul id="ovlist"></ul></div>
+</div>
+
+<script>
+/* ===================================================================
+   ВСЁ, ЧТО НУЖНО ПОМЕНЯТЬ ПОД СЕБЯ — ЗДЕСЬ
+   =================================================================== */
+const ME = {
+  name:   {ru:"Эхроз Шарифзода", en:"Ehroz Sharifzoda"},
+  handle: "@hhrrzz1",
+  telegram: "https://t.me/hhrrzz1",
+  email: "ehrozbekisharifzoda@gmail.com",
+  photo: "photo.jpg",
+  resume: "resume.pdf",
+  location: {ru:"Астана, UTC+5", en:"Astana, UTC+5"},
+  bio: {
+    ru:'графический дизайнер • сейчас <a href="#work">WE project media</a> • раньше <a href="https://orzu-reklama.org" target="_blank">Орзу</a>',
+    en:'graphic designer • now <a href="#work">WE project media</a> • before <a href="https://orzu-reklama.org" target="_blank">Orzu</a>'
+  },
+  beliefs: {
+    ru:["Дизайн должен работать, а не только нравиться.","Система важнее отдельного макета —<br>так бренд растёт без хаоса.","Рутину — нейросетям. Идеи — мне."],
+    en:["Design has to work, not just look nice.","A system beats a single layout —<br>that's how a brand scales without chaos.","Routine goes to AI. Ideas stay with me."]
+  },
+  tools: [
+    {n:"Photoshop", c:"#001e36", t:"Ps", d:{ru:"Каждый день: креативы, ретушь, цветокоррекция, обложки",en:"Every day: ad creatives, retouching, color grading, covers"}},
+    {n:"Illustrator", c:"#330000", t:"Ai", d:{ru:"Логотипы, фирменный стиль, иллюстрации",en:"Logos, brand identity, illustration"}},
+    {n:"InDesign", c:"#49021f", t:"Id", d:{ru:"Вёрстка журналов, газет, книг и буклетов",en:"Magazine, newspaper, book and brochure layout"}},
+    {n:"Figma", c:"#1e1e1e", t:"F", d:{ru:"UI для сайтов и Telegram-ботов, презентации",en:"UI for websites and Telegram bots, presentations"}},
+    {n:"Midjourney", c:"#0b0b0b", t:"Mj", d:{ru:"Генерация идей, концептов и мокапов",en:"Ideas, concepts and mockups"}},
+    {n:"Kling", c:"#2f6bff", t:"K", d:{ru:"Сториборды и черновики видеоконтента",en:"Storyboards and video drafts"}},
+    {n:"Gemini", c:"#6b5cff", t:"G", d:{ru:"Быстрые концепты и вариации",en:"Fast concepts and variations"}},
+    {n:"CorelDRAW", c:"#2c8c3c", t:"Cd", d:{ru:"Полиграфия и подготовка к печати (CMYK)",en:"Print production and prepress (CMYK)"}},
+  ],
+  filters: [
+    {k:"all",   c:"#86868b", l:{ru:"Все",en:"All"}},
+    {k:"brand", c:"#7c3aed", l:{ru:"Брендинг",en:"Branding"}},
+    {k:"ads",   c:"#84cc16", l:{ru:"Реклама",en:"Ads"}},
+    {k:"print", c:"#c2410c", l:{ru:"Печать",en:"Print"}},
+    {k:"ui",    c:"#0a84ff", l:{ru:"UI",en:"UI"}},
+  ],
+  // ← это черновые кейсы по резюме: замени на реальные работы и дай ссылки (Behance, Dribbble, PDF)
+  cases: [
+    {i:"WE", c:"#111", tag:"brand", t:{ru:"Визуальный стиль медиа",en:"Media visual identity"}, s:{ru:"WE project media: онлайн, печать, видео, 2023–2026",en:"WE project media: online, print, video, 2023–2026"}, url:"#"},
+    {i:"Ad", c:"#65a30d", tag:"ads", t:{ru:"Рекламные кампании",en:"Ad campaigns"}, s:{ru:"Баннеры и посты: +35% вовлечённости, 2024–2025",en:"Banners and posts: +35% engagement, 2024–2025"}, url:"#"},
+    {i:"Mg", c:"#c2410c", tag:"print", t:{ru:"Обложки и вёрстка журналов",en:"Magazine covers & layout"}, s:{ru:"Журналы, газеты, книги, 2023–2025",en:"Magazines, newspapers, books, 2023–2025"}, url:"#"},
+    {i:"Tg", c:"#2aabee", tag:"ui", t:{ru:"UI для Telegram-ботов",en:"Telegram bot UI"}, s:{ru:"Интерфейсы ботов и лендинги, 2024",en:"Bot interfaces and landing pages, 2024"}, url:"#"},
+    {i:"Lg", c:"#7c3aed", tag:"brand", t:{ru:"Логотипы и фирменный стиль",en:"Logos & brand identity"}, s:{ru:"Для компаний и их продуктов, 2022–2025",en:"For companies and products, 2022–2025"}, url:"#"},
+    {i:"Pr", c:"#0d9488", tag:"brand", t:{ru:"Презентации для инвесторов",en:"Investor decks"}, s:{ru:"Для руководства и партнёров, 2024",en:"For management and partners, 2024"}, url:"#"},
+    {i:"Or", c:"#9a3412", tag:"print", t:{ru:"Полиграфия «Орзу»",en:"Orzu print production"}, s:{ru:"Визитки, листовки, буклеты, 2022–2023",en:"Business cards, flyers, brochures, 2022–2023"}, url:"https://orzu-reklama.org"},
+    {i:"AI", c:"#a3e635", tag:"ads", t:{ru:"AI-пайплайн ретуши",en:"AI retouching pipeline"}, s:{ru:"200 фото в неделю, −10 ч работы команды",en:"200 photos a week, −10 h team time"}, url:"#"},
+  ],
+  careerStart: "2022-04",   // считаем стаж автоматически
+  timeline: [
+    {y:"2022", p:{ru:"Орзу",en:"Orzu"}, role:{ru:"Дизайнер",en:"Designer"}, place:{ru:"Орзу, реклама и полиграфия",en:"Orzu, advertising & print"}},
+    {y:"2023", p:{ru:"WE media",en:"WE media"}, role:{ru:"Старший дизайнер",en:"Senior designer"}, place:{ru:"WE project media",en:"WE project media"}},
+    {y:"2024", p:{ru:"ТУТ",en:"TUT"}, role:{ru:"Диплом инженера",en:"Engineering degree"}, place:{ru:"ТУТ, ИТ в дизайне",en:"TUT, IT in design"}},
+    {y:{ru:"сейчас",en:"now"}, p:{ru:"WE media",en:"WE media"}, role:{ru:"Старший дизайнер",en:"Senior designer"}, place:{ru:"WE project media, медиа",en:"WE project media, media"}},
+  ],
+  ai: {
+    "Midjourney": [["Концепт обложки журнала","Concept","11.20"],["Мокап упаковки","Mockup","11.18"],["Стилизация фото под бренд","Style","11.14"],["Идеи для рекламного поста","Ads","11.11"]],
+    "Kling":      [["Сториборд для видеоролика","Story","11.09"],["Анимация баннера","Motion","11.05"],["Черновик рилса","Video","10.28"],["Оживить обложку","Motion","10.20"]],
+    "Gemini":     [["Апскейл 200 фото","Retouch","11.21"],["Вариации креатива ×18","Ads","11.17"],["Удалить фон пачкой","Retouch","11.12"],["Ресайз под соцсети","Formats","11.08"]],
+  },
+  stats: [["−50%","концепт"],["+35%","охват"],["200","фото/нед"],["+30%","скорость"],["10+","стажёров"]],
+};
+
+/* ---------- i18n UI ---------- */
+const UI = {
+  en:{nav_home:"Home",nav_about:"About",nav_work:"Work",nav_contact:"Contact",hint:"Look around…",believe_h:"What I believe",msg:"Message on Telegram",cv:"Résumé",tools:"Tools",enter:"Enter — open case",arrows:"↑↓ — select",exp:"Experience",where:"Where",today:"Today",working:"working",bleed:"3 mm bleed",tryit:"print-ready, no defects",opencases:"Open the cases",saved:"10 hours a week",saved2:"AI gave back to the team — for ideas, not routine",logo1:"senior designer, 2023 — now",logo2:"advertising & print, 2022–2023"},
+  ru:{}
+};
+document.querySelectorAll("[data-i]").forEach(e=>UI.ru[e.dataset.i]=e.textContent);
+
+let L = localStorageGet("lang") || "ru", filter="all", sel=0, toolI=0, ai="Midjourney", tlI=ME.timeline.length-1;
+function localStorageGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+const tx = v => typeof v==="object" && v ? (v[L] ?? v.ru) : v;
+const $ = id => document.getElementById(id);
+
+function render(){
+  document.documentElement.lang=L;
+  document.querySelectorAll("[data-i]").forEach(e=>e.textContent=UI[L][e.dataset.i]);
+  document.querySelectorAll(".lang button").forEach(b=>b.classList.toggle("on",b.dataset.l===L));
+  document.title = tx(ME.name)+" — Product Designer";
+  $("name").textContent=tx(ME.name); $("fname").textContent=tx(ME.name); $("handle").textContent=ME.handle;
+  ["tg1","tg2","tg3"].forEach(i=>$(i).href=ME.telegram); $("cvlink").href=ME.resume;
+  $("ava").innerHTML = ME.photo?`<img src="${ME.photo}" alt="">`:tx(ME.name)[0];
+  $("photo").innerHTML = ME.photo?`<img src="${ME.photo}" alt="">`:(L==="ru"?"твоё фото":"your photo");
+  $("loc").textContent=tx(ME.location); $("bio").innerHTML=tx(ME.bio);
+  $("beliefs").innerHTML=tx(ME.beliefs).map(p=>`<p>${p}</p>`).join("");
+  // tools
+  $("dock").innerHTML=ME.tools.map((t,i)=>`<button data-t="${i}" style="background:${t.c}" class="${i===toolI?'on':''}" title="${t.n}">${t.t}</button>`).join("");
+  $("tool-n").textContent=ME.tools[toolI].n; $("tool-d").textContent=tx(ME.tools[toolI].d);
+  // filters + cases
+  $("filters").innerHTML=ME.filters.map(f=>`<button data-f="${f.k}" class="${f.k===filter?'on':''}"><span class="fd" style="background:${f.c}"></span>${tx(f.l)}</button>`).join("")+`<span class="k">⌘K</span>`;
+  renderCases();
+  // experience
+  $("exp-total").textContent=expText();
+  $("tl").innerHTML=ME.timeline.map((t,i)=>`<button data-tl="${i}" class="${i===tlI?'on':''}">${tx(t.y)}<small>${tx(t.p)}</small></button>`).join("");
+  $("w-role").textContent=tx(ME.timeline[tlI].role); $("w-place").textContent=tx(ME.timeline[tlI].place);
+  // ai
+  $("prompts").innerHTML=ME.ai[ai].map(p=>`<li><span>✳</span>${p[0]}<span class="tag">${p[1]}</span><time>${p[2]}</time></li>`).join("");
+  $("aisw").innerHTML=Object.keys(ME.ai).map(k=>`<button data-ai="${k}" class="${k===ai?'on':''}">${k}</button>`).join("");
+  // stats
+  $("stat-cards").innerHTML=ME.stats.map((s,i)=>`<span style="left:${i*58}px;transform:rotate(${(i-2)*4}deg) translateY(${Math.abs(i-2)*4}px)">${s[0]}<small>${s[1]}</small></span>`).join("");
+  $("yr").textContent=new Date().getFullYear();
+  $("mail").textContent=ME.email; $("mail").href="mailto:"+ME.email;
+  document.title = tx(ME.name)+(L==="ru"?" — графический дизайнер":" — Graphic Designer");
+}
+function plural(n,f){const a=n%10,b=n%100;return f[(a===1&&b!==11)?0:(a>=2&&a<=4&&(b<10||b>=20))?1:2]}
+function expText(){
+  const [y,m]=ME.careerStart.split("-").map(Number), d=new Date();
+  const total=(d.getFullYear()-y)*12+(d.getMonth()+1-m), Y=Math.floor(total/12), M=total%12;
+  if(L==="en") return `${Y} year${Y!==1?"s":""}`+(M?` ${M} month${M!==1?"s":""}`:"");
+  return `${Y} ${plural(Y,["год","года","лет"])}`+(M?` ${M} ${plural(M,["месяц","месяца","месяцев"])}`:"");
+}
+function visible(){return ME.cases.filter(c=>filter==="all"||c.tag===filter)}
+function caseHTML(list,s){return list.map((c,i)=>`<li class="${i===s?'sel':''}"><a href="${c.url}"><span class="ic" style="background:${c.c}">${c.i}</span><span><b>${tx(c.t)}</b><small>${tx(c.s)}</small></span><span class="ar">↗</span></a></li>`).join("")}
+function renderCases(){ const v=visible(); sel=Math.min(sel,v.length-1); $("cases").innerHTML=caseHTML(v,sel); }
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.l){L=b.dataset.l;try{localStorage.setItem("lang",L)}catch(_){} render()}
+  if(b.dataset.t){toolI=+b.dataset.t;render()}
+  if(b.dataset.f){filter=b.dataset.f;sel=0;render()}
+  if(b.dataset.tl){tlI=+b.dataset.tl;render()}
+  if(b.dataset.ai){ai=b.dataset.ai;render()}
+  if(b.closest("#seg")){[...b.parentNode.children].forEach(x=>x.classList.toggle("on",x===b));$("sws").classList.toggle("rgb",b.textContent==="RGB")}
+  if(b.id==="cmdtile") openOv();
+});
+$("swi").onclick=e=>e.target.classList.toggle("on");
+document.querySelectorAll('.nav a').forEach(a=>a.onclick=()=>{document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('on'));a.classList.add('on')});
+
+/* keyboard: ↑↓ Enter on the list, ⌘K palette */
+let ovSel=0;
+function ovItems(){const q=$("q").value.toLowerCase();return ME.cases.filter(c=>(tx(c.t)+tx(c.s)).toLowerCase().includes(q))}
+function renderOv(){const v=ovItems();ovSel=Math.max(0,Math.min(ovSel,v.length-1));$("ovlist").innerHTML=caseHTML(v,ovSel)}
+function openOv(){$("ov").classList.add("on");$("q").value="";ovSel=0;renderOv();$("q").focus()}
+$("q").oninput=()=>{ovSel=0;renderOv()};
+$("ov").onclick=e=>{if(e.target.id==="ov")$("ov").classList.remove("on")};
+document.addEventListener("keydown",e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openOv();document.querySelectorAll('.keys kbd').forEach(k=>{k.classList.add('dn');setTimeout(()=>k.classList.remove('dn'),150)});return}
+  const ov=$("ov").classList.contains("on");
+  if(e.key==="Escape"){$("ov").classList.remove("on");return}
+  if(!["ArrowDown","ArrowUp","Enter"].includes(e.key)) return;
+  if(ov){const v=ovItems();if(e.key==="ArrowDown")ovSel++;if(e.key==="ArrowUp")ovSel--;if(e.key==="Enter"&&v[ovSel])location.href=v[ovSel].url;e.preventDefault();renderOv();return}
+  if(document.activeElement!==document.body) return;
+  const v=visible(); if(e.key==="ArrowDown")sel=(sel+1)%v.length; if(e.key==="ArrowUp")sel=(sel-1+v.length)%v.length;
+  if(e.key==="Enter"&&v[sel])location.href=v[sel].url; e.preventDefault(); renderCases();
+});
+
+/* timer: worked time today since 9:00, out of 8h */
+function tick(){
+  const n=new Date(), start=new Date(n); start.setHours(9,0,0,0);
+  const m=Math.max(0,Math.min(480,(n-start)/60000)), p=m/480;
+  $("clock").textContent=Math.floor(m/60)+":"+String(Math.floor(m%60)).padStart(2,"0");
+  $("pct").textContent=(L==="ru"?"из 8 ч, ":"of 8 h, ")+Math.round(p*100)+"%";
+  $("arc").style.strokeDashoffset=377*(1-p);
+}
+render(); tick(); setInterval(tick,30000);
+</script>
+</body>
+</html>
