@@ -19,7 +19,7 @@ const TOOL_IC = {
   kl:['#0b0b0f','<svg viewBox="0 0 38 38"><defs><linearGradient id="kg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2ff3c4"/><stop offset="1" stop-color="#3d7bff"/></linearGradient></defs><path fill="none" stroke="url(#kg)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" d="M10 7v24M28 7 14 19l14 12"/></svg>'],
   gm:['#fff','<svg viewBox="0 0 38 38"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f8bff"/><stop offset=".6" stop-color="#9b72f2"/><stop offset="1" stop-color="#d96570"/></linearGradient></defs><path fill="url(#gg)" d="M19 2c1 9 7.9 16 17 17-9.1 1-16 7.9-17 17-1-9.1-7.9-16-17-17 9.1-1 16-7.9 17-17z"/></svg>'],
   cd:['#fff','<svg viewBox="0 0 38 38"><circle cx="19" cy="17" r="12" fill="#3fae2a"/><path d="M19 29c-2 3-4 5-7 6" stroke="#2c7f1d" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M14 11c3-2 8-1 9 3" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>'],
-  ca:['conic-gradient(from 210deg,#00c4cc,#7d2ae8,#00c4cc)','<b style="font:italic 800 24px Inter,sans-serif;color:#fff">C</b>'],
+  ca:['conic-gradient(from 210deg,#00c4cc,#7d2ae8,#00c4cc)','<b style="font:italic 800 24px var(--font-medeo-sans);color:#fff">C</b>'],
 };
 const ARR='<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10 10 4M5 4h5v5"/></svg>';
 const ARL='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 8h-11M7 3.5 2.5 8 7 12.5"/></svg>';
